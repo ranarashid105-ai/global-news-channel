@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0a4bb4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Global News">
+  <title>Global News App</title>
+  <style>
+    :root {
+      --primary: #0a4bb4;
+      --primary-dark: #072d5b;
+      --accent: #e53935;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #112338;
+      --muted: #617188;
+      --line: #e5ecf4;
+      --shadow: 0 4px 12px rgba(14,31,52,0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    .status-bar {
+      height: max(20px, env(safe-area-inset-top));
+      background: var(--primary-dark);
+      color: #fff;
+      font-size: 12px;
+      padding: max(4px, env(safe-area-inset-top)) 12px 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 56px;
+    }
+
+    .logo-small {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #1a7ef5);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .search-bar {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 8px 12px;
+      border: none;
+    }
+
+    .search-bar input {
+      border: none;
+      background: transparent;
+      flex: 1;
+      outline: none;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .search-bar input::placeholder {
+      color: var(--muted);
+    }
+
+    .menu-icon {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tab-content {
+      display: none;
+      min-height: 100%;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .home-content {
+      padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
+    }
+
+    .breaking-banner {
+      background: linear-gradient(135deg, rgba(7, 43, 89, 0.9), rgba(8, 64, 156, 0.7)),
+                  url('https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&q=80') center/cover;
+      color: #fff;
+      padding: 16px;
+      margin: 12px;
+      border-radius: 12px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    .breaking-banner h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+
+    .breaking-banner p {
+      margin: 0;
+      font-size: 0.95rem;
+      opacity: 0.92;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      margin: 16px 16px 8px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .news-list {
+      display: flex;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      gap: 10px;
+      padding: 0 16px 12px;
+      margin: 0;
+      list-style: none;
+    }
+
+    .news-list li {
+      flex: 0 0 calc(100% - 32px);
+    }
+
+    .news-item {
+      background: var(--panel);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .news-item:active {
+      transform: scale(0.98);
+    }
+
+    .news-thumb {
+      width: 100%;
+      height: 140px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .news-body {
+      padding: 10px 12px;
+    }
+
+    .news-kicker {
+      font-size: 0.7rem;
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .news-title {
+      font-size: 0.95rem;
+      line-height: 1.3;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .news-time {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+
+    .cat-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .cat-card:active {
+      transform: scale(0.95);
+    }
+
+    .cat-icon {
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+
+    .cat-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: max(56px, calc(56px + env(safe-area-inset-bottom)));
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      padding-bottom: max(0px, env(safe-area-inset-bottom));
+      z-index: 40;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 0;
+      font-size: 24px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      height: 56px;
+      transition: color 0.2s ease;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: flex-end;
+      animation: slideUp 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .modal-content {
+      background: var(--panel);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--bg);
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-body {
+      padding: 16px;
+    }
+
+    .menu-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+    }
+
+    .menu-item:active {
+      background: var(--bg);
+    }
+
+    .menu-icon-item {
+      font-size: 20px;
+      width: 24px;
+    }
+
+    .article-detail {
+      padding: 16px;
+    }
+
+    .article-detail h1 {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+      line-height: 1.3;
+    }
+
+    .article-meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .article-image {
+      width: 100%;
+      height: 220px;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+      margin: 12px 0;
+    }
+
+    .article-text {
+      line-height: 1.7;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .share-btn {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span>📶 📡 🔋</span>
+    </div>
+
+    <div class="header">
+      <div class="logo-small">GN</div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search..." id="searchInput">
+        <span style="color: var(--muted);">🔍</span>
+      </div>
+      <button class="menu-icon" onclick="openMenu()">☰</button>
+    </div>
+
+    <div class="content">
+      <!-- Home Tab -->
+      <div id="home-tab" class="tab-content active">
+        <div class="home-content">
+          <div class="breaking-banner">
+            <span class="badge">Breaking</span>
+            <h2>Global News Channel AI</h2>
+            <p>Real-time updates from around the world</p>
+          </div>
+
+          <div class="section-title">Categories</div>
+          <div class="category-grid">
+            <div class="cat-card" onclick="showCategory('World')">
+              <div class="cat-icon">🌍</div>
+              <div class="cat-name">World</div>
+            </div>
+            <div class="cat-card" onclick="showCategory('Pakistan')">
+              <div class="cat-icon">🇵🇰</div>
+              <div class="cat-name">Pakistan</div>
+            </div>
+            <div class="cat-card" onclick="showCategory('Business')">
+              <div class="cat-icon">💼</div>
+              <div class="cat-name">Business</div>
+            </div>
+            <div class="cat-card" onclick="showCategory('Technology')">
+              <div class="cat-icon">🤖</div>
+              <div class="cat-name">Technology</div>
+            </div>
+          </div>
+
+          <div class="section-title">Latest News</div>
+          <ul class="news-list">
+            <li class="news-item" onclick="showArticle('Global leaders meet on climate policy', 'World', 'today')">
+              <div class="news-thumb" style="background-image: url('https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&q=80');"></div>
+              <div class="news-body">
+                <span class="news-kicker">World</span>
+                <p class="news-title">Global leaders meet on climate policy</p>
+                <div class="news-time">Today at 2:30 PM</div>
+              </div>
+            </li>
+            <li class="news-item" onclick="showArticle('Markets rally on strong export data', 'Business', 'today')">
+              <div class="news-thumb" style="background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80');"></div>
+              <div class="news-body">
+                <span class="news-kicker">Business</span>
+                <p class="news-title">Markets rally on strong export data</p>
+                <div class="news-time">Today at 1:15 PM</div>
+              </div>
+            </li>
+            <li class="news-item" onclick="showArticle('AI breakthrough in medical research', 'Technology', 'today')">
+              <div class="news-thumb" style="background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80');"></div>
+              <div class="news-body">
+                <span class="news-kicker">Technology</span>
+                <p class="news-title">AI breakthrough in medical research</p>
+                <div class="news-time">Today at 12:00 PM</div>
+              </div>
+            </li>
+          </ul>
+
+          <div class="section-title">Trending Now</div>
+          <ul class="news-list">
+            <li class="news-item" onclick="showArticle('Trade talks intensify across regions', 'World', 'yesterday')">
+              <div class="news-thumb" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80');"></div>
+              <div class="news-body">
+                <span class="news-kicker">World</span>
+                <p class="news-title">Trade talks intensify across regions</p>
+                <div class="news-time">Yesterday</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Explore Tab -->
+      <div id="explore-tab" class="tab-content">
+        <div style="padding: 16px 16px calc(80px + max(0px, env(safe-area-inset-bottom)) + 16px);">
+          <h2 style="margin: 0 0 12px;">Explore Topics</h2>
+          <div class="category-grid" style="grid-template-columns: 1fr;">
+            <div class="cat-card" style="padding: 16px; display: flex; gap: 12px; align-items: center;" onclick="alert('World News')">
+              <div style="font-size: 2rem;">🌐</div>
+              <div style="text-align: left;">
+                <div class="cat-name" style="text-align: left;">World News</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">24,892 stories</div>
+              </div>
+            </div>
+            <div class="cat-card" style="padding: 16px; display: flex; gap: 12px; align-items: center;" onclick="alert('Pakistan News')">
+              <div style="font-size: 2rem;">🇵🇰</div>
+              <div style="text-align: left;">
+                <div class="cat-name" style="text-align: left;">Pakistan News</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">8,321 stories</div>
+              </div>
+            </div>
+            <div class="cat-card" style="padding: 16px; display: flex; gap: 12px; align-items: center;" onclick="alert('Business News')">
+              <div style="font-size: 2rem;">💼</div>
+              <div style="text-align: left;">
+                <div class="cat-name" style="text-align: left;">Business News</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">5,647 stories</div>
+              </div>
+            </div>
+            <div class="cat-card" style="padding: 16px; display: flex; gap: 12px; align-items: center;" onclick="alert('Technology News')">
+              <div style="font-size: 2rem;">🤖</div>
+              <div style="text-align: left;">
+                <div class="cat-name" style="text-align: left;">Technology News</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">3,892 stories</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Saved Tab -->
+      <div id="saved-tab" class="tab-content">
+        <div style="padding: 16px 16px calc(80px + max(0px, env(safe-area-inset-bottom)) + 16px); text-align: center; color: var(--muted);">
+          <div style="font-size: 3rem; margin: 40px 0;">❤️</div>
+          <h3 style="margin: 0;">No saved articles yet</h3>
+          <p>Tap the heart icon on any article to save it for later.</p>
+        </div>
+      </div>
+
+      <!-- Profile Tab -->
+      <div id="profile-tab" class="tab-content">
+        <div style="padding: 16px 16px calc(80px + max(0px, env(safe-area-inset-bottom)) + 16px);">
+          <div style="text-align: center; margin: 32px 0;">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #1a7ef5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 12px;">👤</div>
+            <h2 style="margin: 0;">Sign In</h2>
+            <p style="color: var(--muted);">Create an account or log in to save your preferences</p>
+            <button style="background: var(--primary); color: #fff; border: none; padding: 12px 32px; border-radius: 20px; font-weight: 700; cursor: pointer; margin-top: 16px;">Sign In</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item active" onclick="switchTab('home-tab', this)">
+        <div>🏠</div>
+        <div class="nav-label">Home</div>
+      </button>
+      <button class="nav-item" onclick="switchTab('explore-tab', this)">
+        <div>🔍</div>
+        <div class="nav-label">Explore</div>
+      </button>
+      <button class="nav-item" onclick="switchTab('saved-tab', this)">
+        <div>❤️</div>
+        <div class="nav-label">Saved</div>
+      </button>
+      <button class="nav-item" onclick="switchTab('profile-tab', this)">
+        <div>👤</div>
+        <div class="nav-label">Profile</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menu Modal -->
+  <div id="menu-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Menu</h2>
+        <button class="close-btn" onclick="closeMenu()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="menu-item" onclick="closeMenu()">
+          <span class="menu-icon-item">⚙️</span>
+          Settings
+        </div>
+        <div class="menu-item" onclick="closeMenu()">
+          <span class="menu-icon-item">🔔</span>
+          Notifications
+        </div>
+        <div class="menu-item" onclick="closeMenu()">
+          <span class="menu-icon-item">💬</span>
+          Feedback
+        </div>
+        <div class="menu-item" onclick="closeMenu()">
+          <span class="menu-icon-item">❓</span>
+          Help & Support
+        </div>
+        <div class="menu-item" onclick="closeMenu()">
+          <span class="menu-icon-item">⚖️</span>
+          Privacy Policy
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Article Modal -->
+  <div id="article-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close-btn" onclick="closeArticle()">✕</button>
+      </div>
+      <div id="article-content" class="article-detail"></div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function openMenu() {
+      document.getElementById('menu-modal').classList.add('active');
+    }
+
+    function closeMenu() {
+      document.getElementById('menu-modal').classList.remove('active');
+    }
+
+    function showArticle(title, category, time) {
+      const content = `
+        <div class="article-image" style="background-image: url('https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&q=80');"></div>
+        <div class="article-meta">
+          <span style="color: var(--primary); font-weight: 700;">${category}</span>
+          <span>${time}</span>
+        </div>
+        <h1>${title}</h1>
+        <div class="article-text">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        </div>
+        <div class="share-buttons">
+          <button class="share-btn" onclick="alert('Share via WhatsApp')">WhatsApp</button>
+          <button class="share-btn" onclick="alert('Share via Twitter')">Twitter</button>
+          <button class="share-btn" onclick="alert('Share via Email')">Email</button>
+        </div>
+      `;
+      document.getElementById('article-content').innerHTML = content;
+      document.getElementById('article-modal').classList.add('active');
+    }
+
+    function closeArticle() {
+      document.getElementById('article-modal').classList.remove('active');
+    }
+
+    function showCategory(cat) {
+      alert('Category selected: ' + cat);
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        alert('Search for: ' + e.target.value);
+      }
+    });
+  </script>
+</body>
+</html>
