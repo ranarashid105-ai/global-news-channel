@@ -1,0 +1,409 @@
+const storyData = [
+  {
+    id: 1,
+    title: 'Global leaders meet on climate policy',
+    category: 'World',
+    tag: 'World',
+    summary: 'Leaders from multiple regions are aligning climate responsibilities to speed up policy action and green investment.',
+    image: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&q=80',
+    time: 'Today, 2:30 PM',
+    author: 'International Desk'
+  },
+  {
+    id: 2,
+    title: 'Markets rally on strong export data',
+    category: 'Business',
+    tag: 'Business',
+    summary: 'Shipping data and industrial demand have boosted investor confidence in export-heavy economies.',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80',
+    time: 'Today, 1:15 PM',
+    author: 'Market Report'
+  },
+  {
+    id: 3,
+    title: 'AI breakthrough in medical research',
+    category: 'Technology',
+    tag: 'Technology',
+    summary: 'New AI-assisted diagnostics are reducing delays and improving early detection in hospitals worldwide.',
+    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
+    time: 'Today, 12:00 PM',
+    author: 'Science Desk'
+  },
+  {
+    id: 4,
+    title: 'Trade talks intensify across regions',
+    category: 'World',
+    tag: 'World',
+    summary: 'Key trade corridors are reopening with a focus on resilience, sustainability, and regional supply chains.',
+    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
+    time: 'Yesterday',
+    author: 'Global Desk'
+  },
+  {
+    id: 5,
+    title: 'Pakistan economic reforms spark debate',
+    category: 'Pakistan',
+    tag: 'Pakistan',
+    summary: 'Policy analysts are weighing how efficiency reforms may influence growth, inflation, and public trust.',
+    image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80',
+    time: 'Today, 8:40 AM',
+    author: 'Pakistan Bureau'
+  },
+  {
+    id: 6,
+    title: 'Creative industries regain visibility through festivals',
+    category: 'Culture',
+    tag: 'Culture',
+    summary: 'Local events and media networks are helping creative communities reconnect with wider audiences.',
+    image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80',
+    time: 'Yesterday',
+    author: 'Culture Desk'
+  },
+  {
+    id: 7,
+    title: 'Public health agencies expand early warning programs',
+    category: 'Health',
+    tag: 'Health',
+    summary: 'Digital tracking and rapid response systems are improving outbreak surveillance and prevention efforts.',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80',
+    time: 'Today, 7:05 AM',
+    author: 'Health Desk'
+  },
+  {
+    id: 8,
+    title: 'Championship race narrows as final rounds approach',
+    category: 'Sports',
+    tag: 'Sports',
+    summary: 'Teams remain tightly matched as season-ending fixtures bring fresh momentum and pressure to the table.',
+    image: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?auto=format&fit=crop&w=1200&q=80',
+    time: 'Today, 5:14 PM',
+    author: 'Sports Desk'
+  }
+];
+
+const categoryOrder = ['World', 'Pakistan', 'Business', 'Technology', 'Health', 'Sports', 'Culture'];
+
+function renderHomeCards() {
+  const grid = document.getElementById('newsGrid');
+  if (!grid) return;
+
+  const items = storyData.slice(0, 6);
+  grid.innerHTML = items.map(item => `
+    <article class="news-card" data-id="${item.id}" data-title="${item.title}">
+      <div class="news-thumb" style="background-image:url('${item.image}')"></div>
+      <div class="news-copy">
+        <span class="kicker">${item.category}</span>
+        <h3>${item.title}</h3>
+        <p>${item.summary}</p>
+      </div>
+    </article>
+  `).join('');
+
+  grid.querySelectorAll('.news-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.getAttribute('data-id');
+      window.location.href = `article.html?id=${id}`;
+    });
+  });
+}
+
+function renderSidebarStories() {
+  const list = document.getElementById('sidebarStories');
+  if (!list) return;
+
+  list.innerHTML = storyData.slice(0, 4).map(item => `
+    <li class="story-item" data-id="${item.id}">
+      <span class="kicker">${item.category}</span>
+      <span class="title">${item.title}</span>
+    </li>
+  `).join('');
+
+  list.querySelectorAll('.story-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.getAttribute('data-id');
+      window.location.href = `article.html?id=${id}`;
+    });
+  });
+}
+
+function renderArticlePage() {
+  const container = document.getElementById('articleContainer');
+  if (!container) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const id = Number(params.get('id')) || 1;
+  const article = storyData.find(item => item.id === id) || storyData[0];
+
+  const related = storyData.filter(item => item.id !== article.id).slice(0, 4);
+
+  container.innerHTML = `
+    <div class="article-layout">
+      <article class="article-main">
+        <div class="article-cover" style="background-image:url('${article.image}')"></div>
+        <div class="article-content">
+          <span class="article-kicker">${article.category}</span>
+          <h1>${article.title}</h1>
+          <div class="article-meta">
+            <span>By ${article.author}</span>
+            <span>•</span>
+            <span>${article.time}</span>
+          </div>
+          <div class="article-copy">
+            <p>${article.summary}</p>
+            <p>Global news and public policy teams continue to track developments across sectors as new data and institutional decisions reshape the reporting environment. The pace of decision-making remains significant, with governments, businesses, and communities responding to shifting priorities, supply conditions, and emerging opportunities.</p>
+            <p>As the conversation continues, experts emphasize the importance of reliable reporting, balanced analysis, and practical understanding. Communities need actionable information that connects daily change to larger economic, political, and social developments.</p>
+            <p>Today’s coverage reflects a broader effort to provide clear context alongside fast-moving updates. From policy signals to market behavior and technology adoption, the story is still unfolding and remains closely connected to everyday life.</p>
+          </div>
+          <div class="share-row">
+            <button class="btn login" type="button" onclick="shareArticle()">Share</button>
+            <button class="btn primary" type="button" onclick="window.print()">Print</button>
+          </div>
+        </div>
+      </article>
+
+      <aside class="sidebar-card">
+        <h3>Related stories</h3>
+        <div class="related-list">
+          ${related.map(item => `
+            <div class="related-item" data-id="${item.id}">
+              <div class="kicker" style="color: var(--primary); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;">${item.category}</div>
+              <div style="font-weight:700; line-height:1.4;">${item.title}</div>
+            </div>
+          `).join('')}
+        </div>
+      </aside>
+    </div>
+  `;
+
+  container.querySelectorAll('.related-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.getAttribute('data-id');
+      window.location.href = `article.html?id=${id}`;
+    });
+  });
+}
+
+function renderCategoryPage() {
+  const list = document.getElementById('categoryList');
+  const heading = document.getElementById('categoryHeading');
+  const empty = document.getElementById('emptyState');
+  if (!list || !heading) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const category = params.get('category') || 'World';
+  const filtered = storyData.filter(item => item.category === category || item.tag === category);
+
+  heading.textContent = `${category} News`;
+  list.innerHTML = filtered.map(item => `
+    <article class="news-card" data-id="${item.id}">
+      <div class="news-thumb" style="background-image:url('${item.image}')"></div>
+      <div class="news-copy">
+        <span class="kicker">${item.category}</span>
+        <h3>${item.title}</h3>
+        <p>${item.summary}</p>
+      </div>
+    </article>
+  `).join('');
+
+  if (!filtered.length) {
+    empty.classList.add('active');
+  } else {
+    empty.classList.remove('active');
+  }
+
+  list.querySelectorAll('.news-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.getAttribute('data-id');
+      window.location.href = `article.html?id=${id}`;
+    });
+  });
+
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  filterButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.category === category);
+    btn.addEventListener('click', () => {
+      const selected = btn.dataset.category;
+      window.location.href = `category.html?category=${encodeURIComponent(selected)}`;
+    });
+  });
+}
+
+function applySearchFilter() {
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+
+  const query = searchInput.value.trim().toLowerCase();
+  const cards = document.querySelectorAll('.news-card');
+  cards.forEach(card => {
+    const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+    const summary = card.querySelector('p')?.textContent.toLowerCase() || '';
+    const match = !query || title.includes(query) || summary.includes(query);
+    card.style.display = match ? '' : 'none';
+  });
+}
+
+function toggleTheme() {
+  const root = document.body;
+  const isDark = root.classList.toggle('dark');
+  localStorage.setItem('themeMode', isDark ? 'dark' : 'light');
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) toggle.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+}
+
+function setupTheme() {
+  const saved = localStorage.getItem('themeMode');
+  if (saved === 'dark') document.body.classList.add('dark');
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) {
+    toggle.textContent = document.body.classList.contains('dark') ? '☀️ Light' : '🌙 Dark';
+    toggle.addEventListener('click', toggleTheme);
+  }
+}
+
+function setupSearchBox() {
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+  searchInput.addEventListener('input', applySearchFilter);
+}
+
+function setupDownloadModal() {
+  const modal = document.getElementById('downloadModal');
+  const openBtn = document.getElementById('downloadBtn');
+  const closeBtn = document.getElementById('modalClose');
+
+  if (!modal) return;
+
+  if (openBtn) openBtn.addEventListener('click', () => modal.classList.add('active'));
+  if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+
+  modal.addEventListener('click', event => {
+    if (event.target === modal) modal.classList.remove('active');
+  });
+}
+
+function downloadOffline() {
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'global-news-channel.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  alert('✅ Website saved offline successfully.');
+}
+
+function installPWA() {
+  alert('📱 To install this app:\n1. Open browser menu\n2. Choose “Install app” or “Add to Home Screen”\n3. Confirm installation.');
+}
+
+function downloadJSON() {
+  const payload = { app: 'Global News Channel', downloadedAt: new Date().toISOString(), categories: categoryOrder };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'global-news-channel-data.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  alert('✅ JSON export downloaded successfully.');
+}
+
+function askAI() {
+  const input = document.getElementById('aiInput');
+  if (!input) return;
+  const question = input.value.trim();
+  if (!question) {
+    alert('Please enter a question for AI.');
+    return;
+  }
+  alert(`🤖 AI Summary:\n\n${question}\n\nThis is a demo AI assistant. Connect real API later for live responses.`);
+}
+
+function shareArticle() {
+  if (navigator.share) {
+    navigator.share({
+      title: document.title,
+      text: 'Check out this article from Global News Channel',
+      url: window.location.href
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => alert('Article link copied to clipboard.'))
+      .catch(() => alert('Sharing not supported in this browser.'));
+  }
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+}
+
+function setupHomePage() {
+  renderHomeCards();
+  renderSidebarStories();
+  setupSearchBox();
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') applySearchFilter();
+    });
+  }
+}
+
+function setupCategoryPage() {
+  renderCategoryPage();
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const selected = button.dataset.category;
+      window.location.href = `category.html?category=${encodeURIComponent(selected)}`;
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupTheme();
+  setupDownloadModal();
+  registerServiceWorker();
+
+  const page = document.body.dataset.page;
+  if (page === 'home') setupHomePage();
+  if (page === 'article') renderArticlePage();
+  if (page === 'category') setupCategoryPage();
+
+  const aiBtn = document.getElementById('askAiBtn');
+  if (aiBtn) aiBtn.addEventListener('click', askAI);
+
+  const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
+  if (downloadHtmlBtn) downloadHtmlBtn.addEventListener('click', downloadOffline);
+
+  const installBtn = document.getElementById('installBtn');
+  if (installBtn) installBtn.addEventListener('click', installPWA);
+
+  const jsonBtn = document.getElementById('jsonBtn');
+  if (jsonBtn) jsonBtn.addEventListener('click', downloadJSON);
+});
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  window.deferredPrompt = event;
+});
+
+window.installApp = function () {
+  if (window.deferredPrompt) {
+    window.deferredPrompt.prompt();
+    window.deferredPrompt.userChoice.then(() => {
+      window.deferredPrompt = null;
+    });
+  } else {
+    installPWA();
+  }
+};

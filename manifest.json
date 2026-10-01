@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a4bb4" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Category | Global News Channel</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="category">
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>🌐 Global AI News • Real News • Trusted Sources</span>
+      <span>English | اردو</span>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-mark">GN</div>
+        <div class="brand-name">Global News<small>AI Channel</small></div>
+      </a>
+
+      <div class="search-box">
+        <input id="searchInput" type="text" placeholder="Search news, topics, people...">
+        <button type="button">Search</button>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn login" type="button">Login</button>
+        <button id="downloadBtn" class="btn accent" type="button">Download</button>
+        <button id="themeToggle" class="btn login" type="button">🌙 Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="index.html">Home</a>
+      <a href="category.html?category=World">World</a>
+      <a href="category.html?category=Pakistan">Pakistan</a>
+      <a href="category.html?category=Business">Business</a>
+      <a href="category.html?category=Technology">Technology</a>
+      <a href="category.html?category=Health">Health</a>
+      <a href="category.html?category=Sports">Sports</a>
+      <a href="category.html?category=Culture">Culture</a>
+    </div>
+  </nav>
+
+  <main class="container page-shell">
+    <div class="page-heading">
+      <h1 id="categoryHeading">World News</h1>
+      <p>Browse all stories in this category with updated analysis and context.</p>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-category="World">World</button>
+      <button class="filter-btn" data-category="Pakistan">Pakistan</button>
+      <button class="filter-btn" data-category="Business">Business</button>
+      <button class="filter-btn" data-category="Technology">Technology</button>
+      <button class="filter-btn" data-category="Health">Health</button>
+      <button class="filter-btn" data-category="Sports">Sports</button>
+      <button class="filter-btn" data-category="Culture">Culture</button>
+    </div>
+
+    <div id="categoryList" class="news-grid"></div>
+
+    <div id="emptyState" class="empty-state">
+      No stories found for this category. Please try another filter.
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div><strong>Global News Channel</strong><br>Real News • Smarter Tomorrow</div>
+      <div>World • Pakistan • Business • AI • Technology</div>
+      <div>Privacy • Terms • Contact • Help Center</div>
+    </div>
+  </footer>
+
+  <div id="downloadModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Download</h2>
+        <button class="modal-close" id="modalClose" type="button">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="download-grid">
+          <div class="download-item" id="downloadHtmlBtn">
+            <div class="download-icon">💾</div>
+            <div class="download-copy">
+              <h4>Download HTML</h4>
+              <p>Save the current page offline for local access.</p>
+            </div>
+          </div>
+          <div class="download-item" id="installBtn">
+            <div class="download-icon">📱</div>
+            <div class="download-copy">
+              <h4>Install App</h4>
+              <p>Add to device home screen for app-like access.</p>
+            </div>
+          </div>
+          <div class="download-item" id="jsonBtn">
+            <div class="download-icon">📊</div>
+            <div class="download-copy">
+              <h4>Export JSON</h4>
+              <p>Download your news metadata in structured form.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
